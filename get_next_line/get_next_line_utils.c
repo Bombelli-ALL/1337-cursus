@@ -6,7 +6,7 @@
 /*   By: alerradi <alerradi@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 15:51:52 by alerradi          #+#    #+#             */
-/*   Updated: 2025/11/18 16:19:23 by alerradi         ###   ########.fr       */
+/*   Updated: 2025/11/21 14:44:30 by alerradi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,21 +52,26 @@ int	find_newline(const char *s, int c)
 	return (1);
 }
 
-char	*ft_substr(char const *s, unsigned int start, size_t len)
+char	*ft_substr(char *s, unsigned int start, size_t len)
 {
 	size_t	i;
 	char	*dest;
 
 	dest = (char *)malloc(sizeof(char) * (len + 1));
 	if (dest == NULL)
-		return (NULL);
+		return (free(s), NULL);
 	i = 0;
 	while (s[start + i] && i < len)
 	{
 		dest[i] = s[start + i];
 		i++;
 	}
-	dest[len] = '\0';
+	dest[i] = '\0';
+	if (dest[0] == '\0')
+	{
+		free(dest);
+		dest = NULL;
+	}
 	return (dest);
 }
 

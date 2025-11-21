@@ -6,7 +6,7 @@
 /*   By: alerradi <alerradi@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 15:51:47 by alerradi          #+#    #+#             */
-/*   Updated: 2025/11/18 15:59:03 by alerradi         ###   ########.fr       */
+/*   Updated: 2025/11/21 14:56:26 by alerradi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 static char	**extract_line(char *remainder)
 {
 	size_t	i;
+	size_t	j;	
 	char	**line_remainder;
 
 	i = 0;
@@ -23,8 +24,18 @@ static char	**extract_line(char *remainder)
 	if (remainder[i] == '\n')
 		i++;
 	line_remainder = (char **)malloc(2 * sizeof(char *));
+	if (!line_remainder)
+	{
+		free(remainder);
+		return (NULL);
+	}
 	*line_remainder = ft_substr(remainder, 0, i);
-	*(line_remainder + 1) = ft_substr(remainder, i, ft_strlen(remainder) - i);
+	if (!(*line_remainder))
+		return (free(line_remainder), NULL);
+	j = ft_strlen(remainder) - i;
+	*(line_remainder + 1) = ft_substr(remainder, i, j);
+	if (!(*(line_remainder + 1)) && j > 0)
+		return (free(*line_remainder), free(line_remainder), NULL);
 	free(remainder);
 	return (line_remainder);
 }
@@ -32,9 +43,9 @@ static char	**extract_line(char *remainder)
 static char	*read_and_join(int fd, char *remainder)
 {
 	char	*temp;
-	int		bytes_read;
+	ssize_t	bytes_read;
 
-	temp = malloc(BUFFER_SIZE + 1);
+	temp = (char *)malloc(BUFFER_SIZE + 1);
 	if (!temp)
 		return (NULL);
 	bytes_read = 1;
@@ -44,6 +55,7 @@ static char	*read_and_join(int fd, char *remainder)
 		if (bytes_read < 0)
 		{
 			free(temp);
+			free(remainder);
 			return (NULL);
 		}
 		temp[bytes_read] = '\0';
@@ -69,6 +81,11 @@ char	*get_next_line(int fd)
 		return (NULL);
 	}
 	temp = extract_line(remainder);
+	if (!temp)
+	{
+		remainder = NULL;
+		return (NULL);
+	}
 	line = *temp;
 	remainder = *(temp + 1);
 	free(temp);
